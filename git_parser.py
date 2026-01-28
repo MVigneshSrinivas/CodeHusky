@@ -2,14 +2,17 @@ import subprocess
 
 class GitDiffParser:
     def __init__(self):
-        return
+        pass
 
     def get_staged_diff(self):
         # This method runs git diff --staged and returns raw diff string and returns None when no files staged
         try:
-            diff = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
-            return diff.stdout
-        except subprocess.CalledProcessError as e:
+            diff = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True, check=False)
+            if diff.returncode != 0:
+                return None
+            return diff.stdout if diff.stdout.strip() else None
+        except Exception as e:
+            print(f"Error running git: {e}")
             return None
 
     def parse_diff_to_chunks(self, diff_string):
